@@ -1,0 +1,56 @@
+image:
+  repository: grafana/tempo
+  tag: "2.8.2"
+  pullPolicy: Always
+
+tempo:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+traces:
+  otlp:
+    grpc:
+      enabled: true
+      endpoint: 0.0.0.0:4317
+    http:
+      enabled: true
+      endpoint: 0.0.0.0:4318
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
+
+ingester:
+  replicationFactor: 1
+
+distributor:
+  replicas: 1
+  service:
+    otlp:
+      enabled: true
+      grpcPort: 4317
+      httpPort: 4318
+
+ingester:
+  replicas: 3
+
+querier:
+  replicas: 1
+
+queryFrontend:
+  replicas: 1
+
+compactor:
+  replicas: 1
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClassName: "local-path"
